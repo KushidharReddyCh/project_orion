@@ -1,17 +1,19 @@
 package com.example.project_orion.service;
 
+import com.example.project_orion.models.Answer;
 import com.example.project_orion.models.Option;
 import com.example.project_orion.models.Question;
 import com.example.project_orion.models.Tag;
+import com.example.project_orion.payload.QuestionDTO;
 import com.example.project_orion.repository.QuestionRepository;
 import com.example.project_orion.repository.TagRepository;
+import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class QuestionServiceImpl implements QuestionService{
@@ -22,6 +24,9 @@ public class QuestionServiceImpl implements QuestionService{
     @Autowired
     private TagRepository tagRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     private final List<Question> questionList = new ArrayList<>();
 
     @Override
@@ -30,7 +35,50 @@ public class QuestionServiceImpl implements QuestionService{
     }
 
     @Override
-    public Question createQuestion(Question question) {
+    public QuestionDTO createQuestion(QuestionDTO questionDTO) {
+
+        Question question = Question.builder()
+                .title(questionDTO.getTitle())
+                .description(questionDTO.getDescription())
+                .author(questionDTO.getAuthor())
+                .isActive(questionDTO.isActive())
+                .subject(questionDTO.getSubject())
+                .difficulty(questionDTO.getDifficulty())
+                .options(questionDTO.getOptions())
+                .tagList(questionDTO.getTagList())
+                .build();
+
+        if (question.getOptions() != null) {
+            for (Option option : question.getOptions()) {
+                option.setQuestion(question);
+            }
+        }
+
+        if (question.getTagList() != null) {
+            Set<Tag> tags = new HashSet<>();
+            for (Tag tag : question.getTagList()) {
+                Tag existingTag = tagRepository.findByText(tag.getText());
+                // Save new tag if it doesn't exist
+                tags.add(Objects.requireNonNullElseGet(existingTag, () -> tagRepository.save(tag)));
+            }
+            question.setTagList(tags);
+        }
+
+        Question savedQuestion = questionRepository.save(question);
+
+        List<Option> options = savedQuestion.getOptions();
+        Long correctOptionId = options.get(questionDTO.getCorrectOptionId() - 1).getOptionId();
+
+        // Create an Answer and set the correct option
+        Answer answer = new Answer();
+        answer.setCorrectOptionId(correctOptionId);
+        savedQuestion.setAnswer(answer);
+
+        Question updateQuestion = questionRepository.save(savedQuestion);
+        return modelMapper.map(updateQuestion, QuestionDTO.class);
+    }
+}
+
 
         /*
         *   Note on Bidirectional Relationships in JPA:
@@ -48,30 +96,3 @@ public class QuestionServiceImpl implements QuestionService{
              Example fix:
              Before saving the Question, ensure each Option has its "question" field set:
           */
-
-
-        if (question.getOptions() != null) {
-            for (Option option : question.getOptions()) {
-                option.setQuestion(question);
-            }
-        }
-
-
-        if (question.getTagList() != null) {
-            Set<Tag> tags = new HashSet<>();
-            for (Tag tag : question.getTagList()) {
-                Tag existingTag = tagRepository.findByText(tag.getText());
-
-                if (existingTag != null) {
-                    tags.add(existingTag);
-                } else {
-                    tags.add(tagRepository.save(tag));  // Save new tag if it doesn't exist
-                }
-            }
-            question.setTagList(tags); // Set tags for the question
-        }
-
-        return questionRepository.save(question);
-    }
-
-}

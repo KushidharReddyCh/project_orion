@@ -17,5 +17,5 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long answerId;
 
-    private String text;
+    private Long correctOptionId;
 }

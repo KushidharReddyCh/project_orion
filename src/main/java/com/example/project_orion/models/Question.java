@@ -36,7 +36,7 @@ Overriding of the hasCode function
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@Builder
 @Table(name = "questions")
 public class Question {
 
@@ -45,7 +45,7 @@ public class Question {
     private Long questionId;
 
     @NotBlank
-    @Size(min = 3, max = 25, message = "must contain at-least 3 characters & at-max 25 characters")
+    @Size(min = 3, max = 50, message = "must contain at-least 3 characters & at-max 50 characters")
     private String title;
 
     @NotBlank
