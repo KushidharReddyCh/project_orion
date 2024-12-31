@@ -1,6 +1,7 @@
 package com.example.project_orion.models;
 
 import com.example.project_orion.enums.Difficulty;
+import com.example.project_orion.enums.Status;
 import com.example.project_orion.enums.Subject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -53,7 +54,10 @@ public class Question {
     private String description;
 
     private String author;
-    private boolean isActive;
+
+    @NotNull(message = "Status must not be null")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @NotNull(message = "Subject must not be null")
     @Enumerated(EnumType.STRING)
@@ -77,6 +81,4 @@ public class Question {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tagList;
-
-
 }

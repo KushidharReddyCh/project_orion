@@ -1,18 +1,22 @@
 package com.example.project_orion.service;
 
+import com.example.project_orion.exceptions.APIException;
+import com.example.project_orion.exceptions.ResourceNotFoundException;
 import com.example.project_orion.models.Answer;
 import com.example.project_orion.models.Option;
 import com.example.project_orion.models.Question;
 import com.example.project_orion.models.Tag;
 import com.example.project_orion.payload.QuestionDTO;
+import com.example.project_orion.payload.QuestionResponse;
 import com.example.project_orion.repository.QuestionRepository;
 import com.example.project_orion.repository.TagRepository;
-import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-
 import java.util.*;
 
 @Service
@@ -30,18 +34,42 @@ public class QuestionServiceImpl implements QuestionService{
     private final List<Question> questionList = new ArrayList<>();
 
     @Override
-    public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
+    public QuestionResponse getAllQuestions(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Question> questionPage = questionRepository.findAll(pageDetails);
+
+        List<Question> questionList = questionPage.getContent();
+        List<QuestionDTO> questionDTOS = questionList.stream()
+                .map(question -> modelMapper.map(question, QuestionDTO.class))
+                .toList();
+        QuestionResponse questionResponse = new QuestionResponse();
+        questionResponse.setContent(questionDTOS);
+        questionResponse.setPageNumber(questionPage.getNumber());
+        questionResponse.setPageSize(questionPage.getSize());
+        questionResponse.setTotalElements(questionPage.getTotalElements());
+        questionResponse.setTotalPages(questionPage.getTotalPages());
+        questionResponse.setLastPage(questionPage.isLast());
+        return questionResponse;
     }
 
     @Override
     public QuestionDTO createQuestion(QuestionDTO questionDTO) {
 
+        Question questionFromDB = questionRepository.findByTitle(questionDTO.getTitle());
+
+        if(questionFromDB != null){
+            throw new APIException("Question with title " + questionDTO.getTitle() + " already exists!!!");
+        }
+
         Question question = Question.builder()
                 .title(questionDTO.getTitle())
                 .description(questionDTO.getDescription())
                 .author(questionDTO.getAuthor())
-                .isActive(questionDTO.isActive())
+                .status(questionDTO.getStatus())
                 .subject(questionDTO.getSubject())
                 .difficulty(questionDTO.getDifficulty())
                 .options(questionDTO.getOptions())
@@ -76,6 +104,80 @@ public class QuestionServiceImpl implements QuestionService{
 
         Question updateQuestion = questionRepository.save(savedQuestion);
         return modelMapper.map(updateQuestion, QuestionDTO.class);
+    }
+
+    @Override
+    public QuestionDTO getQuestionById(Long questionId) {
+        Question questionFromDB = questionRepository.findById(questionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Question", "questionId", questionId));
+
+        return modelMapper.map(questionFromDB, QuestionDTO.class);
+    }
+
+    @Override
+    public QuestionDTO updateQuestion(Long questionId, QuestionDTO questionDTO) {
+
+        Question questionFromDB = questionRepository.findById(questionId)
+                .orElseThrow(() -> new APIException("Question with id " + questionId + " not found!"));
+
+        // Only update fields that are provided in the DTO
+        if (questionDTO.getTitle() != null) {
+            questionFromDB.setTitle(questionDTO.getTitle());
+        }
+        if (questionDTO.getDescription() != null) {
+            questionFromDB.setDescription(questionDTO.getDescription());
+        }
+        if (questionDTO.getAuthor() != null) {
+            questionFromDB.setAuthor(questionDTO.getAuthor());
+        }
+        if (questionDTO.getSubject() != null) {
+            questionFromDB.setSubject(questionDTO.getSubject());
+        }
+        if (questionDTO.getDifficulty() != null) {
+            questionFromDB.setDifficulty(questionDTO.getDifficulty());
+        }
+        if (questionDTO.getOptions() != null) {
+            List<Option> newOptionList = questionDTO.getOptions();
+            List<Option> originalOptionList = questionFromDB.getOptions();
+            for(int idx = 0; idx < newOptionList.size(); idx++){
+                originalOptionList.get(idx).setText(newOptionList.get(idx).getText());
+            }
+          // questionFromDB.setOptions(originalOptionList);
+        }
+        if (questionDTO.getTagList() != null) {
+            Set<Tag> tags = new HashSet<>();
+            for (Tag tag : questionDTO.getTagList()) {
+                Tag existingTag = tagRepository.findByText(tag.getText());
+                tags.add(Objects.requireNonNullElseGet(existingTag, () -> tagRepository.save(tag)));
+            }
+            questionFromDB.setTagList(tags);
+        }
+        if(questionDTO.getStatus() != null){
+            questionFromDB.setStatus(questionDTO.getStatus());
+        }
+        Question updatedQuestion = questionRepository.save(questionFromDB);
+
+        if (questionDTO.getCorrectOptionId() != null) {
+            List<Option> options = questionFromDB.getOptions();
+            Long correctOptionId = options.get(questionDTO.getCorrectOptionId() - 1).getOptionId();
+
+            Answer answer = questionFromDB.getAnswer() != null ? questionFromDB.getAnswer() : new Answer();
+            answer.setCorrectOptionId(correctOptionId);
+            questionFromDB.setAnswer(answer);
+            questionRepository.save(questionFromDB);
+        }
+
+        return modelMapper.map(updatedQuestion, QuestionDTO.class);
+    }
+
+    @Override
+    public QuestionDTO deleteQuestion(Long questionId) {
+        Question questionFromDB = questionRepository.findById(questionId)
+                .orElseThrow(() -> new APIException("Question with id " + questionId + " not found!"));
+
+        QuestionDTO questionDTO = modelMapper.map(questionFromDB, QuestionDTO.class);
+        questionRepository.delete(questionFromDB);
+        return questionDTO;
     }
 }
 

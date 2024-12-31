@@ -1,6 +1,7 @@
 package com.example.project_orion.payload;
 
 import com.example.project_orion.enums.Difficulty;
+import com.example.project_orion.enums.Status;
 import com.example.project_orion.enums.Subject;
 import com.example.project_orion.models.Option;
 import com.example.project_orion.models.Tag;
@@ -17,6 +18,8 @@ import java.util.Set;
 @ToString
 public class QuestionDTO {
 
+    private Long questionId;
+
     @NotBlank
     @Size(min = 3, max = 50, message = "must contain at-least 3 characters & at-max 25 characters")
     private String title;
@@ -26,7 +29,9 @@ public class QuestionDTO {
     private String description;
 
     private String author;
-    private boolean isActive;
+
+    @NotNull
+    private Status status;
 
     @NotNull(message = "Subject must not be null")
     private Subject subject;
