@@ -3,7 +3,7 @@
 
 ---
 
-# API:  Get All Questions
+# 1. Get All Questions
 
 ``` GET /public/questions ```
 
@@ -96,9 +96,64 @@ A JSON object containing:
 
 ---
 
+## 2. Get Question by ID
+
+```GET /public/question/{questionId}```
+
+**Description:**
+
+This API retrieves a question by its `questionId`. 
+If the question exists, it returns the details of the question.
+If not, a 404 error with a message is returned.
+
+
+#### Path Parameter
+- `questionId` (required): The unique identifier for the question.
+
+<details>
+  <summary>Success JSON Response (HTTP 200) </summary>
+<pre>
+    <code>
+  {
+    "questionId": 1,
+    "title": "What is the atomic number of Hydrogen?",
+    "description": "Choose the correct answer.",
+    "author": "Kushidhar",
+    "status": "ACTIVE",
+    "subject": "CHEMISTRY",
+    "difficulty": "EASY",
+    "options": [
+      { "optionId": 1, "text": "1" },
+      { "optionId": 2, "text": "2" },
+      { "optionId": 3, "text": "3" },
+      { "optionId": 4, "text": "4" }
+    ],
+    "tagList": [
+      { "tagId": 1, "text": "periodic_table" },
+      { "tagId": 3, "text": "atomic_number" },
+      { "tagId": 2, "text": "hydrogen" }
+    ],
+    "correctOptionId": null
+  }
+ </code>
+  </pre>
+</details>
+
+<details>
+  <summary>Error Response (HTTP 404) JSON</summary>
+<pre>
+    <code>
+{
+  "message": "Question not found with questionId: 11",
+  "status": false
+}
+ </code>
+  </pre>
+</details>
 
 
 
+---
 - Create Question -> http://localhost:8080/api/admin/questions
 - Update Question -> http://localhost:8080/api/admin/question/{questionId}
 - Delete Question -> http://localhost:8080/api/admin/question/{questionId}
