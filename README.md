@@ -252,57 +252,94 @@ Creates a new question with the provided details, including options and tags.
 </details>
 
 ### Validation and Error Handling
-
 The following validation rules must be adhered to when creating a question:
-- **Title**:
-    - **Required**: Yes
-    - **Constraints**:
-        - Minimum 3 characters
-        - Maximum 50 characters
-    - **Validation Message**: `"must contain at-least 3 characters & at-max 50 characters"`
-    - Must be unique for every question. 
-  
-- **Description**:
-    - **Required**: Yes
-    - **Constraints**:
-        - Minimum 6 characters
-        - Maximum 1000 characters
-    - **Validation Message**: `"must contain at-least 6 characters & at-max 1000 characters"`
+<details>
+<summary>**Title**</summary>
 
-- **Author**:
-    - **Required**: No
+- **Required**: Yes
+  - **Constraints**:
+      - Minimum 3 characters
+      - Maximum 50 characters
+  - **Validation Message**: `"must contain at-least 3 characters & at-max 50 characters"`
+  - Must be unique for every question.
 
-- **Status**:
-    - **Required**: Yes
-    - **Allowed Values**: Enum `["ACTIVE", "INACTIVE"]`
-    - **Validation Message**: `"Status must not be null"`
+</details>
 
-- **Subject**:
-    - **Required**: Yes
-    - **Allowed Values**: Enum `["CHEMISTRY", "PHYSICS", "MATH", "BIOLOGY"]`
-    - **Validation Message**: `"Subject must not be null"`
+<details>
+<summary>**Description**</summary>
 
-- **Difficulty**:
-    - **Required**: Yes
-    - **Allowed Values**: Enum `["EASY", "MEDIUM", "HARD"]`
-    - **Validation Message**: `"Difficulty must not be null"`
+- **Required**: Yes
+  - **Constraints**:
+      - Minimum 6 characters
+      - Maximum 1000 characters
+  - **Validation Message**: `"must contain at-least 6 characters & at-max 1000 characters"`
 
-- **Options**:
-    - **Required**: Yes
-    - **Constraints**:
-        - Exactly 4 options
-        - Each option must have a `text` field
+</details>
 
-- **Tags (tagList)**:
-    - **Required**: No
-    - **Details**: A set of tags describing the question
-    - Creates a new tag if it doesn't exist.
+<details>
+<summary>**Author**</summary>
 
-- **Correct Option ID**:
-    - **Required**: Yes
-    - **Constraints**:
-        - Must be between 1 and 4
-    - **Validation Message**: `"CorrectOptionId must be between 1 and 4"`
+- **Required**: No
+
+</details>
+
+<details>
+<summary>**Status**</summary>
+
+- **Required**: Yes
+  - **Allowed Values**: Enum `["ACTIVE", "INACTIVE"]`
+  - **Validation Message**: `"Status must not be null"`
+
+</details>
+
+<details>
+<summary>**Subject**</summary>
+
+- **Required**: Yes
+  - **Allowed Values**: Enum `["CHEMISTRY", "PHYSICS", "MATH", "BIOLOGY"]`
+  - **Validation Message**: `"Subject must not be null"`
+
+</details>
+
+<details>
+<summary>**Difficulty**</summary>
+
+- **Required**: Yes
+  - **Allowed Values**: Enum `["EASY", "MEDIUM", "HARD"]`
+  - **Validation Message**: `"Difficulty must not be null"`
+
+</details>
+
+<details>
+<summary>**Options**</summary>
+
+- **Required**: Yes
+  - **Constraints**:
+      - Exactly 4 options
+      - Each option must have a `text` field
+
+</details>
+
+<details>
+<summary>**Tags (tagList)**</summary>
+
+- **Required**: No
+  - **Details**:
+      - A set of tags describing the question
+      - Creates a new tag if it doesn't exist.
+
+</details>
+
+<details>
+<summary>**Correct Option ID**</summary>
+
+- **Required**: Yes
+  - **Constraints**:
+      - Must be between 1 and 4
+  - **Validation Message**: `"CorrectOptionId must be between 1 and 4"`
+
+</details>
+
 
 ### Error Responses
 All possible error responses for this API are listed below:
@@ -462,8 +499,35 @@ This endpoint allows updating a specific question based on the provided `questio
 1. Caution when updating options. <br> If, for example, only 2 options are provided, the first 2 options will be updated, and the remaining options will remain unchanged.
 2. Caution when updating tags. <br> If the tags field is provided, the question will be updated to include only the tags specified in the payload. Any tags not included will be removed from the question but will remain persisted in the database.
 
+---
+
+## DELETE QUESTION
+
+This API is used to delete a specific question from the system.
+The question, along with its linked options and answer, will be deleted from the database.
+The tags linked to the question will remain in the tagsDB and will not be deleted.
+
+### Endpoint
+
+`DELETE /admin/question/{questionId}`
+
+### Request Parameters
+- `questionId` (path variable): The unique ID of the question to be deleted.
+
+### Response
+- **200 OK**: The deleted `QuestionDTO` is returned, containing the details of the deleted question.
+
+### Error Responses
+- `404 Not Found`: If the question with the given questionId does not exist, a 404 Not Found error is returned with the message:
+    ```json
+      {
+          "message": "Question with id 1 not found!",
+          "status": false
+      }
+    ```
+
+---
+
 ## REST
-- Update Question -> http://localhost:8080/api/admin/question/{questionId}
-- Delete Question -> http://localhost:8080/api/admin/question/{questionId}
 - Get Answer for a question -> http://localhost:8080/api/public/answer/{questionId}
 - Validate answer -> http://localhost:8080/api/admin/validate/answer
