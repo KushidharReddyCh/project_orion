@@ -351,7 +351,11 @@ All possible error responses for this API are listed below:
     - **Response Body**:
         ```json
         {
-            "title": "must contain at-least 3 characters & at-max 25 characters"
+          "errors": {
+                "description": "must contain at-least 6 characters & at-max 1000 characters",
+                "title": "must contain at-least 3 characters & at-max 25 characters"
+            },
+          "status": false
         }
        ```
 
@@ -380,7 +384,10 @@ All possible error responses for this API are listed below:
     - **Response Body**:
       ```json
       {
-          "message": "Subject must not be null."
+          "errors": {
+              "subject": "Subject must not be null"
+          },
+          "status": false
       }
       ```
 

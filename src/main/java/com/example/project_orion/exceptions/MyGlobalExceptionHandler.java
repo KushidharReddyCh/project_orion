@@ -18,14 +18,20 @@ import java.util.regex.Pattern;
 public class MyGlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> myMethodArgumentNotValidException(MethodArgumentNotValidException e){
-        Map<String, String> response = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> myMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> fieldErrors = new HashMap<>();
+
         e.getBindingResult().getAllErrors().forEach(err -> {
-            String fieldName = ((FieldError)err).getField();
+            String fieldName = ((FieldError) err).getField();
             String message = err.getDefaultMessage();
-            response.put(fieldName, message);
+            fieldErrors.put(fieldName, message);
         });
-        return new ResponseEntity<Map<String, String>>(response, HttpStatus.BAD_REQUEST);
+
+        response.put("status", false);
+        response.put("errors", fieldErrors);
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(APIException.class)
