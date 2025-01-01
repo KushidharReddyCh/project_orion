@@ -12,7 +12,6 @@
 Fetches a list of questions with options for pagination and sorting.
 
 
-
 ### Request Parameters
 
 | Parameter    | Type    | Default   | Required | Description                                       |
@@ -253,8 +252,11 @@ Creates a new question with the provided details, including options and tags.
 
 ### Validation and Error Handling
 The following validation rules must be adhered to when creating a question:
+
+<div style="padding-left: 20px;">
+
 <details>
-<summary>**Title**</summary>
+<summary>Title</summary>
 
 - **Required**: Yes
   - **Constraints**:
@@ -266,7 +268,7 @@ The following validation rules must be adhered to when creating a question:
 </details>
 
 <details>
-<summary>**Description**</summary>
+<summary>Description</summary>
 
 - **Required**: Yes
   - **Constraints**:
@@ -277,14 +279,14 @@ The following validation rules must be adhered to when creating a question:
 </details>
 
 <details>
-<summary>**Author**</summary>
+<summary>Author</summary>
 
 - **Required**: No
 
 </details>
 
 <details>
-<summary>**Status**</summary>
+<summary>Status</summary>
 
 - **Required**: Yes
   - **Allowed Values**: Enum `["ACTIVE", "INACTIVE"]`
@@ -293,7 +295,7 @@ The following validation rules must be adhered to when creating a question:
 </details>
 
 <details>
-<summary>**Subject**</summary>
+<summary>Subject</summary>
 
 - **Required**: Yes
   - **Allowed Values**: Enum `["CHEMISTRY", "PHYSICS", "MATH", "BIOLOGY"]`
@@ -302,7 +304,7 @@ The following validation rules must be adhered to when creating a question:
 </details>
 
 <details>
-<summary>**Difficulty**</summary>
+<summary>Difficulty</summary>
 
 - **Required**: Yes
   - **Allowed Values**: Enum `["EASY", "MEDIUM", "HARD"]`
@@ -311,7 +313,7 @@ The following validation rules must be adhered to when creating a question:
 </details>
 
 <details>
-<summary>**Options**</summary>
+<summary>Options</summary>
 
 - **Required**: Yes
   - **Constraints**:
@@ -321,7 +323,7 @@ The following validation rules must be adhered to when creating a question:
 </details>
 
 <details>
-<summary>**Tags (tagList)**</summary>
+<summary>Tags (tagList)</summary>
 
 - **Required**: No
   - **Details**:
@@ -331,7 +333,7 @@ The following validation rules must be adhered to when creating a question:
 </details>
 
 <details>
-<summary>**Correct Option ID**</summary>
+<summary>CorrectOptionID</summary>
 
 - **Required**: Yes
   - **Constraints**:
@@ -339,7 +341,7 @@ The following validation rules must be adhered to when creating a question:
   - **Validation Message**: `"CorrectOptionId must be between 1 and 4"`
 
 </details>
-
+</div>
 
 ### Error Responses
 All possible error responses for this API are listed below:
@@ -501,7 +503,7 @@ This endpoint allows updating a specific question based on the provided `questio
 
 ---
 
-## DELETE QUESTION
+## 5. DELETE QUESTION
 
 This API is used to delete a specific question from the system.
 The question, along with its linked options and answer, will be deleted from the database.
@@ -528,6 +530,84 @@ The tags linked to the question will remain in the tagsDB and will not be delete
 
 ---
 
-## REST
-- Get Answer for a question -> http://localhost:8080/api/public/answer/{questionId}
-- Validate answer -> http://localhost:8080/api/admin/validate/answer
+## 6. GET ANSWER
+
+### Endpoint
+`GET /api/public/answer/{questionId}`
+
+### Description
+Fetches the correct option ID for a specific question.
+
+### **Request**
+
+- **Path Parameter**:
+    - `questionId` (Long): The ID of the question.
+
+### **Response**
+
+#### **SUCCESS (200 OK)**
+
+```json
+{
+  "questionId": 1,
+  "correctOptionId": 4
+}
+```
+
+#### QUESTION NOT FOUND (400 BAD REQUEST)
+```json
+{
+    "message": "Question with id 3 not found!",
+    "status": false
+}
+```
+
+---
+
+## 7. VALIDATE ANSWER
+
+### Endpoint
+
+`POST /api/admin/validate/answer`
+
+### Description
+Validates the submitted option for a question and returns the status of the submission.
+
+### Request
+
+```json
+    {
+        "questionId": 1,
+        "optionId": 4
+    }
+```
+### Response
+
+```json
+    {
+      "status": "CORRECT"
+    }
+```
+
+### Fields:
+- `CORRECT`: If the submitted option matches the correct answer.
+- `INCORRECT`: If the submitted option does not match the correct answer.
+- `ANSWER_DOES_NOT_EXIST`: If no correct answer is defined for the question.
+
+### QUESTION NOT FOUND (400 BAD REQUEST)
+```json
+{
+    "message": "Question with id 3 not found!",
+    "status": false
+}
+```
+
+
+---
+
+## **License and Copyright**
+© 2025 ProjectOrion Group. All rights reserved.
+This project and its content, including but not limited to code, documentation, and design, are the intellectual property of ProjectOrion Group. 
+Unauthorized copying, modification, distribution, or use of any part of this project without prior written permission is strictly prohibited.
+
+---
