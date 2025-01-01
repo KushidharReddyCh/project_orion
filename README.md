@@ -325,10 +325,11 @@ The following validation rules must be adhered to when creating a question:
 <details>
 <summary>Tags (tagList)</summary>
 
-- **Required**: No
+- **Required**: Yes
   - **Details**:
       - A set of tags describing the question
       - Creates a new tag if it doesn't exist.
+      - At least 1 tag is required for a question
 
 </details>
 

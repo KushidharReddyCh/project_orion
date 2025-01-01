@@ -43,6 +43,8 @@ public class QuestionDTO {
     @Size(min = 4, max = 4, message = "must be exactly 4")
     private List<Option> options;
 
+    @NotNull // use jakartha NotNull not lombok one
+    @Size(min = 1, message = "at-least 1 tag needs to present")
     private Set<Tag> tagList;
 
     @NotNull

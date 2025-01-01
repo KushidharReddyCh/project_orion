@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Set;
@@ -71,9 +72,13 @@ public class Question {
     @JoinColumn(name = "answer_id", referencedColumnName = "answerId", nullable = true)
     private Answer answer;
 
+    @NotNull
+    @Size(min = 4, max = 4, message = "must be exactly 4")
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Option> options;
 
+    @NonNull
+    @Size(min = 1, message = "at-least 1 tag needs to present")
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "question_tags",
