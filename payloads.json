@@ -1,0 +1,240 @@
+{
+  "info": {
+    "_postman_id": "c3aecc38-77f6-4e57-a3e1-a8ca7aa0b0f5",
+    "name": "Project Orion",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39952392",
+    "_collection_link": "https://www.postman.com/altimetry-operator-71250683/workspace/project-orion/collection/39952392-c3aecc38-77f6-4e57-a3e1-a8ca7aa0b0f5?action=share&source=collection_link&creator=39952392"
+  },
+  "item": [
+    {
+      "name": "get all questions",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/public/questions?pageNumber=0&pageSize=2&sortBy=questionId&sortOrder=asc",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "public",
+            "questions"
+          ],
+          "query": [
+            {
+              "key": "pageNumber",
+              "value": "0"
+            },
+            {
+              "key": "pageSize",
+              "value": "2"
+            },
+            {
+              "key": "sortBy",
+              "value": "questionId"
+            },
+            {
+              "key": "sortOrder",
+              "value": "asc"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get question by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/public/questions",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "public",
+            "questions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "create question",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"What is the atomic number of Hydrogen?\",\n    \"description\": \"Choose the correct answer.\",\n    \"subject\": \"CHEMISTRY\",\n    \"difficulty\": \"EASY\",\n    \"status\": \"ACTIVE\",\n    \"author\": \"Kushidhar\",\n    \"options\": [\n        {\n            \"text\": \"1\"\n        },\n        {\n            \"text\": \"2\"\n        },\n        {\n            \"text\": \"3\"\n        },\n        {\n            \"text\": \"4\"\n        }\n    ],\n    \"tagList\": [\n        {\n            \"text\": \"atomic_number\"\n        },\n        {\n            \"text\": \"hydrogen\"\n        },\n        {\n            \"text\": \"periodic_table\"\n        }\n    ],\n    \"correctOptionId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/admin/questions",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "admin",
+            "questions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "update question",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"What is the capital of France?\",\n    \"description\": \"Choose the correct answer. jjjj\",\n    // \"subject\": \"BIOLOGY\",\n    // \"difficulty\": \"EASY\",\n    // \"status\" : \"ACTIVE\",\n    // \"author\" : \"Kushidhar\",\n    \"options\": [\n        {\n            \"text\": \"Berlin\"\n        },\n        {\n            \"text\": \"Madrid\"\n        },\n        {\n            \"text\": \"Paris\"\n        },\n        {\n            \"text\": \"Rome\"\n        }\n    ],\n    \"tagList\": [\n        // {\n        //     \"text\": \"rests\"\n        // },\n        {\n            \"text\": \"Europexx\"\n        },\n        {\n            \"text\": \"e243q4r\"\n        }\n    ],\n    \"correctOptionId\": 2 // Id of the correct option (for example, Paris)\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/admin/question/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "admin",
+            "question",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "delete question",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/admin/question/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "admin",
+            "question",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get answer",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/public/answer/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "public",
+            "answer",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "validate answer",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"questionId\": 101,\n  \"optionId\": 202\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/admin/validate/answer",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "admin",
+            "validate",
+            "answer"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
