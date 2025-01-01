@@ -40,11 +40,14 @@ public class QuestionDTO {
     private Difficulty difficulty;
 
     //TODO: is options mandatory or not?
+//    @NotNull
+//    @Size(min = 4, max = 4)
     private List<Option> options;
 
     private Set<Tag> tagList;
 
     //TODO: is correctOptionId mandatory or not?
+//    @NotNull
     @Min(1) @Max(4)
     private Integer correctOptionId;
 
