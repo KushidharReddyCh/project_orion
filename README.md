@@ -3,17 +3,17 @@
 
 ---
 
-# 1. Get All Questions
+## 1. Get All Questions
 
 ``` GET /public/questions ```
 
-## Description
+### Description
 
 Fetches a list of questions with options for pagination and sorting.
 
 
 
-## Request Parameters
+### Request Parameters
 
 | Parameter    | Type    | Default   | Required | Description                                       |
 |--------------|---------|-----------|----------|---------------------------------------------------|
@@ -22,14 +22,12 @@ Fetches a list of questions with options for pagination and sorting.
 | `sortBy`     | String  | `questionId` | No    | The field used to sort the questions.            |
 | `sortOrder`  | String  | `asc`     | No       | The sort direction: `asc` for ascending or `desc` for descending order. |
 
+### Response
 
-
-## Response
-
-### Status Code
+#### Status Code
 - **200 OK**
 
-### Response Body
+#### Response Body
 A JSON object containing:
 - The list of questions.
 - Pagination metadata such as the current page, total pages, and total number of questions.
@@ -100,16 +98,17 @@ A JSON object containing:
 
 ```GET /public/question/{questionId}```
 
-**Description:**
+### Description
 
 This API retrieves a question by its `questionId`. 
 If the question exists, it returns the details of the question.
 If not, a 404 error with a message is returned.
 
 
-#### Path Parameter
+### Path Parameter
 - `questionId` (required): The unique identifier for the question.
 
+### Response JSONs
 <details>
   <summary>Success JSON Response (HTTP 200) </summary>
 <pre>
@@ -252,8 +251,7 @@ Creates a new question with the provided details, including options and tags.
   </pre>
 </details>
 
-
-**Validation and Error Handling**
+### Validation and Error Handling
 
 The following validation rules must be adhered to when creating a question:
 - **Title**:
@@ -352,6 +350,119 @@ All possible error responses for this API are listed below:
 - Any unexpected validation or persistence errors will return a generic `500 Internal Server Error` with details in the logs for debugging.
 
 ---
+
+## 4. Update Question
+
+This API is used to update the details of a specific question in the system. It allows partial updates, meaning only the fields provided in the request body will be updated, and the rest of the question details will remain unchanged.
+
+
+
+### Endpoint
+`PUT /admin/question/{questionId}`
+
+This endpoint allows updating a specific question based on the provided `questionId`.
+
+### Request Parameters
+- `questionId` (path variable): The unique ID of the question to be updated.
+
+
+<details>
+  <summary>Request Body</summary>
+<pre>
+    <code>
+{
+    "title": "What is the atomic number of Hydrogen1?",
+    "description": "Choose the correct answer.",
+    // "subject": "CHEMISTRY",
+    // "difficulty": "EASY",
+    // "status": "ACTIVE",
+    // "author": "Kushidhar",
+    "options": [
+        {
+            "text": "1"
+        },
+        {
+            "text": "2"
+        },
+        {
+            "text": "3"
+        },
+        {
+            "text": "4"
+        }
+    ],
+    // "tagList": [
+    //     {
+    //         "text": "atomic_number"
+    //     },
+    //     {
+    //         "text": "hydrogen"
+    //     },
+    //     {
+    //         "text": "periodic_table"
+    //     }
+    // ]
+    "correctOptionId": 3
+}
+ </code>
+  </pre>
+</details>
+
+<details>
+  <summary>Response Body</summary>
+<pre>
+    <code>
+{
+    "questionId": 1,
+    "title": "What is the atomic number of Hydrogen1?",
+    "description": "Choose the correct answer.",
+    "author": "Kushidhar",
+    "status": "ACTIVE",
+    "subject": "CHEMISTRY",
+    "difficulty": "EASY",
+    "options": [
+        {
+            "optionId": 1,
+            "text": "1"
+        },
+        {
+            "optionId": 2,
+            "text": "2"
+        },
+        {
+            "optionId": 3,
+            "text": "3"
+        },
+        {
+            "optionId": 4,
+            "text": "4"
+        }
+    ],
+    "tagList": [
+        {
+            "tagId": 1,
+            "text": "hydrogen"
+        },
+        {
+            "tagId": 2,
+            "text": "periodic_table"
+        },
+        {
+            "tagId": 3,
+            "text": "atomic_number"
+        }
+    ],
+    "correctOptionId": null
+}
+ </code>
+  </pre>
+</details>
+
+### NOTE
+1. Caution when updating options. <br> If, for example, only 2 options are provided, the first 2 options will be updated, and the remaining options will remain unchanged.
+2. Caution when updating tags. <br> If the tags field is provided, the question will be updated to include only the tags specified in the payload. Any tags not included will be removed from the question but will remain persisted in the database.
+
+## REST
 - Update Question -> http://localhost:8080/api/admin/question/{questionId}
 - Delete Question -> http://localhost:8080/api/admin/question/{questionId}
 - Get Answer for a question -> http://localhost:8080/api/public/answer/{questionId}
