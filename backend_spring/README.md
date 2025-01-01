@@ -506,7 +506,7 @@ This endpoint allows updating a specific question based on the provided `questio
 </details>
 
 ### NOTE
-1. Caution when updating options. <br> If, for example, only 2 options are provided, the first 2 options will be updated, and the remaining options will remain unchanged.
+1. Caution when updating options. <br> The options must be provided in the same order which is sent by the get api.
 2. Caution when updating tags. <br> If the tags field is provided, the question will be updated to include only the tags specified in the payload. Any tags not included will be removed from the question but will remain persisted in the database.
 
 ---
