@@ -607,6 +607,8 @@ Validates the submitted option for a question and returns the status of the subm
 
 ## **License and Copyright**
 © 2025 ProjectOrion Group. All rights reserved.
+
+
 This project and its content, including but not limited to code, documentation, and design, are the intellectual property of ProjectOrion Group. 
 Unauthorized copying, modification, distribution, or use of any part of this project without prior written permission is strictly prohibited.
 
