@@ -288,8 +288,8 @@ The following validation rules must be adhered to when creating a question:
     - **Required**: Yes
     - **Allowed Values**: Enum `["EASY", "MEDIUM", "HARD"]`
     - **Validation Message**: `"Difficulty must not be null"`
-[//]: # (Recheck the options docs again)
-- **Options ⛳️**:
+
+- **Options**:
     - **Required**: Yes
     - **Constraints**:
         - Exactly 4 options
@@ -333,7 +333,7 @@ All possible error responses for this API are listed below:
     - **Response Body**:
       ```json
       {
-          "message": "Invalid value for 'status'. Allowed values are ['ACTIVE', 'INACTIVE'].",
+          "message": "Invalid value for subject 'MATH'. Allowed values are [OTHERS, CHEMISTRY, BIOLOGY, MATHEMATICS, PHYSICS].",
           "status": false
       }
       ```
@@ -352,7 +352,6 @@ All possible error responses for this API are listed below:
 - Any unexpected validation or persistence errors will return a generic `500 Internal Server Error` with details in the logs for debugging.
 
 ---
-- Create Question -> http://localhost:8080/api/admin/questions
 - Update Question -> http://localhost:8080/api/admin/question/{questionId}
 - Delete Question -> http://localhost:8080/api/admin/question/{questionId}
 - Get Answer for a question -> http://localhost:8080/api/public/answer/{questionId}

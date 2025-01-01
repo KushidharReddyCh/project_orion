@@ -39,15 +39,13 @@ public class QuestionDTO {
     @NotNull(message = "Difficulty must not be null")
     private Difficulty difficulty;
 
-    //TODO: is options mandatory or not?
-//    @NotNull
-//    @Size(min = 4, max = 4)
+    @NotNull
+    @Size(min = 4, max = 4, message = "must be exactly 4")
     private List<Option> options;
 
     private Set<Tag> tagList;
 
-    //TODO: is correctOptionId mandatory or not?
-//    @NotNull
+    @NotNull
     @Min(1) @Max(4)
     private Integer correctOptionId;
 
