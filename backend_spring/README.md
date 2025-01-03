@@ -5,7 +5,7 @@
 
 ## 1. Get All Questions
 
-``` GET /public/questions ```
+``` GET /api/public/questions ```
 
 ### Description
 
@@ -95,7 +95,7 @@ A JSON object containing:
 
 ## 2. Get Question by ID
 
-```GET /public/question/{questionId}```
+```GET /api/public/question/{questionId}```
 
 ### Description
 
@@ -405,7 +405,7 @@ This API is used to update the details of a specific question in the system. It 
 
 
 ### Endpoint
-`PUT /admin/question/{questionId}`
+`PUT /api/admin/question/{questionId}`
 
 This endpoint allows updating a specific question based on the provided `questionId`.
 
@@ -519,7 +519,7 @@ The tags linked to the question will remain in the tagsDB and will not be delete
 
 ### Endpoint
 
-`DELETE /admin/question/{questionId}`
+`DELETE /api/admin/question/{questionId}`
 
 ### Request Parameters
 - `questionId` (path variable): The unique ID of the question to be deleted.
@@ -610,6 +610,104 @@ Validates the submitted option for a question and returns the status of the subm
 }
 ```
 
+
+---
+
+## SEARCH QUESTIONS BY FILTERS
+
+This api allows clients to search for questions based on `tags`, `subject`, `title`, `difficulty` 
+and retrieve paginated results, with optional sorting.
+
+### Endpoint
+`POST /public/question/search/`
+
+### Request Parameters
+| Parameter    | Type    | Default   | Required | Description                                                                                  |
+|--------------|---------|-----------|----------|----------------------------------------------------------------------------------------------|
+| `pageNumber` | Integer | `0`       | No       | The page number to retrieve (0-based indexing).                                              |
+| `pageSize`   | Integer | `20`      | No       | The number of questions per page.                                                            |
+| `sortBy`     | String  | `questionId` | No    | Allowed sorting options: `questionId`, `title`, `difficulty`, `subject`. |
+| `sortOrder`  | String  | `asc`     | No       | The sort direction: `asc` for ascending or `desc` for descending order.                      |
+
+### Request Body
+Filter Object 
+1. `subject` _optional_ 
+    - The subject of the question (Enum type: Subject).
+2. `difficulty` `optional`
+   - The difficulty level of the question (Enum type: Difficulty). 
+3. `title` _optional_ 
+   - The title of the question. This field supports partial matching (e.g., "title": "biology" will match questions with titles containing the word "biology"). 
+4. `tagList` _optional_: 
+   - A list of tag IDs associated with the question. If provided, only questions with these tags will be returned.
+
+### Request Payload
+```json
+    {
+      "subject": "CHEMISTRY",
+      "difficulty": "MEDIUM",
+      "title": "addition",
+      "tagList": [1, 2, 3]
+    } 
+```
+<details>
+  <summary>Click to view JSON response</summary>
+
+<pre>
+    <code>
+{
+    "content": [
+        {
+            "questionId": 1,
+            "title": "What is the atomic number of Hydrogen?",
+            "description": "Choose the correct answer.",
+            "author": "Kushidhar",
+            "status": "ACTIVE",
+            "subject": "CHEMISTRY",
+            "difficulty": "EASY",
+            "options": [
+                {
+                    "optionId": 1,
+                    "text": "1"
+                },
+                {
+                    "optionId": 2,
+                    "text": "2"
+                },
+                {
+                    "optionId": 3,
+                    "text": "3"
+                },
+                {
+                    "optionId": 4,
+                    "text": "4"
+                }
+            ],
+            "tagList": [
+                {
+                    "tagId": 3,
+                    "text": "atomic_number"
+                },
+                {
+                    "tagId": 2,
+                    "text": "hydrogen"
+                },
+                {
+                    "tagId": 1,
+                    "text": "periodic_table"
+                }
+            ],
+            "correctOptionId": null
+        }
+    ],
+    "pageNumber": 0,
+    "pageSize": 2,
+    "totalElements": 1,
+    "totalPages": 1,
+    "lastPage": true
+}
+ </code>
+  </pre>
+</details>
 
 ---
 
