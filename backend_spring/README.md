@@ -613,7 +613,7 @@ Validates the submitted option for a question and returns the status of the subm
 
 ---
 
-## SEARCH QUESTIONS BY FILTERS
+## 7. SEARCH QUESTIONS BY FILTERS
 
 This api allows clients to search for questions based on `tags`, `subject`, `title`, `difficulty` 
 and retrieve paginated results, with optional sorting.

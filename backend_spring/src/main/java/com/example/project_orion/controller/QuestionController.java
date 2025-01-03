@@ -57,7 +57,7 @@ public class QuestionController {
         return new ResponseEntity<>(savedQuestionDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/public/question/search/")
+    @PostMapping("/public/question/search")
     public ResponseEntity<QuestionResponse> searchQuestionsByTitle(
             @RequestBody Filter filter,
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
