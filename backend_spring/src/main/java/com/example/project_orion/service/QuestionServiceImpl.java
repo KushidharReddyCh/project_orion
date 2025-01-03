@@ -1,15 +1,12 @@
 package com.example.project_orion.service;
 
-import com.example.project_orion.exceptions.APIException;
-import com.example.project_orion.exceptions.ResourceNotFoundException;
-import com.example.project_orion.models.Answer;
-import com.example.project_orion.models.Option;
-import com.example.project_orion.models.Question;
-import com.example.project_orion.models.Tag;
-import com.example.project_orion.payload.QuestionDTO;
-import com.example.project_orion.payload.QuestionResponse;
-import com.example.project_orion.repository.QuestionRepository;
-import com.example.project_orion.repository.TagRepository;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +14,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import java.util.*;
+
+import com.example.project_orion.exceptions.APIException;
+import com.example.project_orion.exceptions.ResourceNotFoundException;
+import com.example.project_orion.models.Answer;
+import com.example.project_orion.models.Option;
+import com.example.project_orion.models.Question;
+import com.example.project_orion.models.Tag;
+import com.example.project_orion.payload.Filter;
+import com.example.project_orion.payload.QuestionDTO;
+import com.example.project_orion.payload.QuestionResponse;
+import com.example.project_orion.repository.QuestionRepository;
+import com.example.project_orion.repository.TagRepository;
 
 @Service
 public class QuestionServiceImpl implements QuestionService{
@@ -179,22 +187,87 @@ public class QuestionServiceImpl implements QuestionService{
         questionRepository.delete(questionFromDB);
         return questionDTO;
     }
+
+    @Override
+    public QuestionResponse fetchAllQuestions(Filter filter, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        String subjectValue = (filter.getSubject() != null) ? filter.getSubject().toString() : null;
+        String difficultyValue = (filter.getDifficulty() != null) ? filter.getDifficulty().toString() : null;
+        Integer tagCount = (filter.getTagList() != null) ? filter.getTagList().size() : null;
+        List<Question> questionList;
+        if(filter.getTagList() == null){
+            questionList = questionRepository.findQuestions(filter.getTitle(), subjectValue, difficultyValue);
+        }else{
+            questionList = questionRepository.findQuestionsWithTags(filter.getTitle(),
+                    subjectValue,
+                    difficultyValue,
+                    filter.getTagList(),
+                    tagCount
+            );
+        }
+
+        Comparator<Question> comparator = getComparator(sortBy, sortOrder);
+        if (comparator != null) {
+            questionList.sort(comparator);
+        }
+
+        int totalQuestions = questionList.size();
+        int startIndex = pageNumber * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, totalQuestions);
+        List<Question> paginatedQuestions = new ArrayList<>();
+        if(startIndex < endIndex){
+            paginatedQuestions = questionList.subList(startIndex, endIndex);
+        }
+        List<QuestionDTO> questionDTOS = paginatedQuestions.stream()
+                .map(question -> modelMapper.map(question, QuestionDTO.class))
+                .toList();
+        QuestionResponse questionResponse = new QuestionResponse();
+        questionResponse.setContent(questionDTOS);
+        questionResponse.setPageNumber(pageNumber);
+        questionResponse.setPageSize(pageSize);
+        questionResponse.setTotalElements((long) totalQuestions);
+        questionResponse.setTotalPages((int) Math.ceil((double) totalQuestions / pageSize));
+        questionResponse.setLastPage(endIndex == totalQuestions);
+        return questionResponse;
+
+    }
+
+    private Comparator<Question> getComparator(String sortBy, String sortOrder) {
+        return switch (sortBy) {
+            case "title" -> sortOrder.equalsIgnoreCase("asc") ?
+                    Comparator.comparing(Question::getTitle) :
+                    Comparator.comparing(Question::getTitle).reversed();
+            case "subject" -> sortOrder.equalsIgnoreCase("asc") ?
+                    Comparator.comparing(Question::getSubject) :
+                    Comparator.comparing(Question::getSubject).reversed();
+            case "difficulty" -> sortOrder.equalsIgnoreCase("asc") ?
+                    Comparator.comparing(Question::getDifficulty) :
+                    Comparator.comparing(Question::getDifficulty).reversed();
+            case "questionId" ->
+                    sortOrder.equalsIgnoreCase("asc") ?
+                            Comparator.comparingLong(Question::getQuestionId) :
+                            Comparator.comparingLong(Question::getQuestionId).reversed();
+            default -> null;
+        };
+    }
+
 }
 
 
-        /*
-        *   Note on Bidirectional Relationships in JPA:
-             In a bidirectional relationship, Spring JPA does not automatically
-             update the association on both sides. For example, when persisting
-             a Question with its Options, the "question" field in the Option entity
-             must be explicitly set. This ensures that the foreign key (QUESTION_ID)
-             in the options table is populated.
+/*   
+Note on Bidirectional Relationships in JPA:
+In a bidirectional relationship, Spring JPA does not automatically
+update the association on both sides. For example, when persisting
+a Question with its Options, the "question" field in the Option entity
+must be explicitly set. This ensures that the foreign key (QUESTION_ID)
+in the options table is populated.
 
-             Reason: JPA does not infer the relationship on the inverse (child) side
-             unless explicitly mapped in the code. Without setting the relationship
-             on both sides, the child entity (Option) won't know about the parent
-             entity (Question), resulting in a null foreign key.
+Reason: JPA does not infer the relationship on the inverse (child) side
+unless explicitly mapped in the code. Without setting the relationship
+on both sides, the child entity (Option) won't know about the parent
+entity (Question), resulting in a null foreign key.
 
-             Example fix:
-             Before saving the Question, ensure each Option has its "question" field set:
-          */
+Example fix:
+Before saving the Question, ensure each Option has its "question" field set:
+*/
+
+

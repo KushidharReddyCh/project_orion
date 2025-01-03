@@ -1,12 +1,12 @@
 package com.example.project_orion.controller;
 
 import com.example.project_orion.config.AppConstants;
+import com.example.project_orion.payload.Filter;
 import com.example.project_orion.payload.QuestionDTO;
 import com.example.project_orion.payload.QuestionResponse;
 import com.example.project_orion.service.QuestionService;
 import com.example.project_orion.service.validation.CreateQuestion;
 import com.example.project_orion.service.validation.UpdateQuestion;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,4 +57,15 @@ public class QuestionController {
         return new ResponseEntity<>(savedQuestionDTO, HttpStatus.OK);
     }
 
+    @PostMapping("/public/question/search/")
+    public ResponseEntity<QuestionResponse> searchQuestionsByTitle(
+            @RequestBody Filter filter,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_QUESTIONS_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder
+            ) {
+        QuestionResponse questions = questionService.fetchAllQuestions(filter, pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(questions, HttpStatus.OK);
+    }
 }

@@ -26,7 +26,7 @@ public class QuestionDTO {
     @Size(min = 3,
             max = 50,
             groups = {CreateQuestion.class, UpdateQuestion.class},
-            message = "must contain at-least 3 characters & at-max 25 characters")
+            message = "must contain at-least 3 characters & at-max 50 characters")
     private String title;
 
     @NotBlank(groups = CreateQuestion.class)
@@ -36,7 +36,6 @@ public class QuestionDTO {
             groups = {CreateQuestion.class, UpdateQuestion.class},
             message = "must contain at-least 6 characters & at-max 1000 characters")
     private String description;
-
 
     private String author;
 
